@@ -13,7 +13,14 @@ import string
 from operator import mul
 from functools import reduce
 from itertools import combinations_with_replacement
-import conditionalMomentGenerator as cmg          
+
+import sys
+import os
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+import conditionalMomentGenerator as cmg   
+       
 import time
 import dill
 dill.settings['recurse'] = True

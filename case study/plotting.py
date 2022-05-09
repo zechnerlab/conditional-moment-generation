@@ -6,11 +6,11 @@ import scipy.stats
 import random
 
 # %% load data
-file = 'snSSA/bistable_network_snSSA_'
+file = 'bistable_network_snSSA_'
 X = np.load(file + "X.npy")
 M = np.load(file + 'M.npy')
 
-file = 'SSA/bistable_network_SSA_'
+file = 'bistable_network_SSA_'
 X_SSA = np.load(file + "X.npy")
 
 #file = 'SSA/bistable_network_'
@@ -91,9 +91,6 @@ y1000 = [sum(scipy.stats.norm(mu[i],std[i]).pdf(xi) for i in idx)/(float(1000)) 
 # =============================================================================
 
 # %% plot together
-#plt.rcParams['pdf.fonttype'] = 42
-#plt.rcParams['ps.fonttype'] = 42
-#plt.rcParams['font.family'] = 'Arial'
 plt.rcParams['font.size'] = '12'
 fig, (ax1, ax2) = plt.subplots(1, 2)
 

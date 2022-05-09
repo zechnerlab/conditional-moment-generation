@@ -74,7 +74,7 @@ def SSAsim(timerange,x0,constants,tf,n):
         
     return x, time.perf_counter() - timer, reac_count
 
-# %% run simulation
+# %% run simulations
 from functools import partial # allows for multiple arguments in pooled function
 from multiprocessing import Pool
 

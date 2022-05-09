@@ -15,6 +15,12 @@ from itertools import combinations_with_replacement
 import dill
 dill.settings['recurse'] = True
 
+import sys
+import os
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
 import conditionalMomentGenerator as cmg
 
 init_printing()
