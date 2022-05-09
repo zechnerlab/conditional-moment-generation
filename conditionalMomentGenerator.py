@@ -22,11 +22,6 @@ from itertools import combinations_with_replacement
 import dill # saving/restoring files with symbolic expressions
 dill.settings['recurse'] = True
 
-# %% general to do's:
-    # check if substitutePiToMoment or doIndexShift is slower
-    # try to make this faster somehow
-    # is there a way to internally parallelize things?
-
 # %% 1) input system stoichiometry
 
 def reactionSystem(stoich_reac, stoich_prod, X=None, rates=None):
@@ -253,19 +248,15 @@ def chemicalMasterEquation(X, rates, stoich_reac, stoich_net, RZ, idx_latent, id
 
     for i, reac in enumerate(RZ): # every latent reaction
         h_mod = rates[reac] # propensity with modified stoichiometry
-### ??? preallocate p_mod
         p_mod = [] # argument of probability function with modified stoichiometry
 
-### ??? compute h_mod differently as list comprehension?
         for j in range(np.shape(stoich_net)[0]): # construct modified stoichiometry
             h_mod = h_mod * (X[j] - stoich_net[j,reac])**stoich_reac[j, reac]
 
-### ??? compute as list comprehension? or at least allocate directly?
         for j, x in enumerate(idx_latent): # every latent species
             p_mod.append(sympify("{} - {}".format(X[x], stoich_net[x,reac])))
         
         expr += h_mod * func(Array(p_mod),t)
-### ??? compute propensities once in the beginning
         expr = expr - propensities(X, rates, stoich_reac)[reac] * func(Array([X[x] for x in idx_latent]), t)
 
     return expr
@@ -302,7 +293,6 @@ def getPropensityPolynomials(X, rates, stoich_reac, idx_latent, idx_select):
 
     '''
 
-### ??? preallocate
     temp = []
     fk = []
     ck = []
@@ -345,7 +335,6 @@ def getStochPrefactor(X, fk, reac, stoich_net):
         filter equation.
 
     '''
-### ??? preallocate
     prefactor = []
     if fk[reac].func == Pow:
         prefactor.append((fk[reac].args[0] - stoich_net[X.index(fk[reac].args[0]),reac])**fk[reac].args[1])
@@ -405,7 +394,6 @@ def computeFilterEquation(X, rates, stoich_reac, stoich_net, RO, RL, RZ, idx_lat
     dt = symbols('dt')
     M = symbols('M', cls=Function)
     # define reaction counters
-### ??? do in one step?
     R = ["dR{}".format(_) for _ in range(1,nreactions+1)]
     R = [symbols(r) for r in R]
 
@@ -426,7 +414,6 @@ def computeFilterEquation(X, rates, stoich_reac, stoich_net, RO, RL, RZ, idx_lat
 
     ### construct stochastic part of filter equation      
     # first stochastic part (all reactions in RL)
-### ??? preallocate
     _ = []
     for i,reac in enumerate(RL):
         prefactor = getStochPrefactor(X, fk, reac, stoich_net)
@@ -434,7 +421,6 @@ def computeFilterEquation(X, rates, stoich_reac, stoich_net, RO, RL, RZ, idx_lat
     stoch1 = sum(_)
     
     # second stochastic part (all reactions in RO)
-### ??? preallocate
     _ = []
     for i,reac in enumerate(RO):
         _.append(R[reac]*(func(Array([X[x] - stoich_net[x,reac] for x in idx_latent]),t) - func(X_lat,t)))
@@ -577,7 +563,6 @@ def substitutePiToMoment(index_shifted_expr, X, idx_latent):
     
     X_lat = Array([X[x] for x in idx_latent])
     
-### ??? preallocate? what am I doing here?
     subs_terms = [] # list that stores latent factors that should be substituted
     
     for i,term in enumerate(index_shifted_expr.expand().as_ordered_terms()):
@@ -722,7 +707,6 @@ def closeMomentEq(moment_eq, max_order, scheme):
         # iterate over moments of order > max_order
         for i,f in enumerate(wanted_factors):
             _ = [] # list of substitutions
-### ??? preallocate? is this possible here?
             if f.is_Mul:
                 for j,arg in enumerate(f.args):
                     if arg.is_Symbol: _.append(arg)
@@ -861,7 +845,6 @@ def sympyExprToDiffEq(dM, closed_moments, stoich_net):
     R = ["dR{}".format(_) for _ in range(1,nreactions+1)]
     R = [symbols(r) for r in R]
         
-### ??? preallocate!
     SDE_exprs = [[] for i in range(nreactions)]
     for j,m in enumerate(dM):
         for i in range(0,nreactions):
