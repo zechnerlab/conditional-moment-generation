@@ -100,7 +100,7 @@ select = ['G_1a', 'G_1i', 'G_2a', 'G_2i']
 # %% specify order, closure scheme, file name to save data to
 order = 2
 scheme = 'normal' # possible schemes: normal, gamma, lognormal
-file = 'bistable_network'
+file = 'snSSA/bistable_network'
 
 # %% generate and save equations
 my_system = cmg.generateEquations(stoich_reac, 
@@ -126,7 +126,7 @@ nsim =  10000                 # number of MC simulations
 timerange = np.linspace(0,tf,tf)    # time points
 reactions = np.zeros(nsim)          # to count simulated reactions
 times = np.zeros(nsim)              # for timing
-alpha = 1.1
+alpha = 5
 
 # %% initial conditions etc.
 x0 = np.array([0,1,0,1]) # G1a, G1i, G2a, G2i
