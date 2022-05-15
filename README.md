@@ -1,10 +1,10 @@
 # Automated generation of conditional moment equations for stochastic reaction networks
-This repository contains Python code to automatically generate and save conditional moment equations for a set of chemical species in a stochastic reaction network. This tool is the basis for **paper**. *(Last update: 9 May 2022.)*
+This repository contains Python code to automatically generate and save conditional moment equations for a set of chemical species in a stochastic reaction network. This tool is the basis for the paper "Automatic Generation of Conditional Moment Equations for Stochastic Reaction Networks" by HJ Wiederanders, AL Moor and C Zechner currently under submission. *(Last update: 9 May 2022.)*
 
 ## Content
 - `ConditionalMomentGenerator.py` contains the source code with all functions that are needed to generate the moment equations.
 - `HOW TO generate conditional moment equations.ipynb` is a tutorial explaining how to use the generator tool.
-- The directory `case study` contains the files `case_study.py`, `SSA_multicore.py`, `snSSA.py`, and `plotting.py`. These are further scripts containing code to reproduce the case study equations, simulations, and plots of **paper**.
+- The directory `case study` contains the files `case_study.py`, `SSA_multicore.py`, `snSSA.py`, and `plotting.py`. These are further scripts containing code to reproduce the case study equations, simulations, and plots of the paper.
 
 For further information, contact Hanna Wiederanders (wiederan@mpi-cbg.de).
 
