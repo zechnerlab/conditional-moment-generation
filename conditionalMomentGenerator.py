@@ -61,11 +61,19 @@ def reactionSystem(stoich_reac, stoich_prod, X=None, rates=None):
     if np.shape(stoich_reac) != np.shape(stoich_prod):
         raise ValueError("stoich_reac and stoich_prod must match in dimension. stoich_reac has dimension {}, while stoich_prod has dimension {}".format(np.shape(stoich_reac), np.shape(stoich_prod)))
     
+    # check that input matrices contain no negative values
+    if False in [i>=0 for i in list(stoich_reac)+list(stoich_prod)]:
+        raise ValueError("Only non-negative integers allowed in stoich_reac and stoich_prod.")
+    
+    # check that input matrices contain integers only
+    if False in [isinstance(i, int) for i in list(stoich_reac)+list(stoich_prod)]:
+        raise ValueError("Input matrices contain decimal numbers! Only non-negative integers allowed in stoich_reac and stoich_prod.")
+    
     stoich_net = stoich_prod - stoich_reac
     (nx,nreactions) = np.shape(stoich_reac)
 
     if type(stoich_net) != type(Matrix()):
-        raise TypeError('inputs should be of type sympy.Matrix()')
+        raise TypeError('Inputs should be of type sympy.Matrix()')
  
     # check if X has the correct number of entries if it is not None
     if X != None and len(X) != np.shape(stoich_reac)[0]:
@@ -680,7 +688,7 @@ def closeMomentEq(moment_eq, max_order, scheme):
         maximum order to occur in a moment equation. Higher orders are 
         approximated. Valid maximum orders are 2 or 3.
     scheme : str
-        moment closure scheme. "normal", "gamma", and "lognormal" scheme 
+        moment closure scheme. "normal" and "lognormal" scheme 
         are supported. 
 
     Returns
@@ -690,8 +698,8 @@ def closeMomentEq(moment_eq, max_order, scheme):
 
     '''
 
-    if scheme not in ['normal', 'gamma', 'lognormal']:
-        raise ValueError('Moment approximation scheme not supported. Please use one of: normal, gamma, lognormal.')
+    if scheme not in ['normal', 'lognormal']:
+        raise ValueError('Moment approximation scheme not supported. Please use one of: normal, lognormal.')
     if not isinstance(max_order, int):
         raise TypeError('order should be an integer number (2 or 3).')
     
@@ -720,13 +728,6 @@ def closeMomentEq(moment_eq, max_order, scheme):
             if max_order == 2:
                 if scheme == "normal":
                     closed_moment_eq = closed_moment_eq.subs(M(reduce(mul, _)), -2*M(_[0])*M(_[1])*M(_[2]) + M(_[0]*_[1])*M(_[2]) + M(_[1]*_[2])*M(_[0]) + M(_[0]*_[2])*M(_[1]))
-                elif scheme == "gamma":
-                    # differentiate cases (different formulas for different number of species)
-                    if len(set(_)) == 1 or len(set(_)) == 2:
-                        # first and last item of the list are the different elements (_[0] contains the single variable, _[2] the powered one)
-                        closed_moment_eq = closed_moment_eq.subs(M(reduce(mul, _)), 2 * M(_[2]**2)*M(_[2]*_[0])/M(_[2]) - M(_[2]**2)*M(_[0]))
-                    if len(set(_)) == 3:
-                        closed_moment_eq = closed_moment_eq.subs(M(reduce(mul, _)), M(_[0])*M(_[1]*_[2]) + M(_[1])*M(_[0]*_[2]) + M(_[2])*M(_[1]*_[0]) - 2*M(_[0])*M(_[1])*M(_[2]))
                 elif scheme == "lognormal":
                     closed_moment_eq = closed_moment_eq.subs(M(reduce(mul, _)), M(_[0]*_[1])*M(_[1]*_[2])*M(_[0]*_[2])/(M(_[0])*M(_[1])*M(_[2])))
                     
@@ -738,8 +739,6 @@ def closeMomentEq(moment_eq, max_order, scheme):
                                                               - 2 * (M(_[0]*_[1])*M(_[2])*M(_[3]) + M(_[0]*_[2])*M(_[1])*M(_[3]) + M(_[0]*_[3])*M(_[2])*M(_[1]) \
                                                                      + M(_[1]*_[2])*M(_[0])*M(_[3]) + M(_[1]*_[3])*M(_[0])*M(_[2]) + M(_[2]*_[3])*M(_[0])*M(_[1])) \
                                                                   + 6 * M(_[0])*M(_[1])*M(_[2])*M(_[3]))
-                elif scheme == "gamma":
-                    raise ValueError('Cannot compute gamma closure for moments of 4th order. Please use normal or lognormal closure instead.')
                 elif scheme == "lognormal":
                     closed_moment_eq = closed_moment_eq.subs(M(reduce(mul, _)),
                                                  M(_[0]*_[1]*_[2])*M(_[0]*_[2]*_[3])*M(_[0]*_[1]*_[3])*M(_[3]*_[1]*_[2])*M(_[0])*M(_[1])*M(_[2])*M(_[3]) \
@@ -750,15 +749,13 @@ def closeMomentEq(moment_eq, max_order, scheme):
 
     return closed_moment_eq.simplify()
 
-def closeMoments(conditional_moments, scheme = "gamma", order = 2):
+def closeMoments(conditional_moments, scheme = "normal", order = 2):
     '''
     applies moment closure schemes to given conditional moment equations
     in order to close the system of differential equations.
     
-    3rd order moments can be approximated using "normal",
-    "gamma", or "lognormal" closure scheme. 
-    4th order moments can approximated using "normal"
-    or "lognormal" closure scheme.
+    3rd and 4th order moments can be approximated using "normal",
+    or "lognormal" closure scheme. 
     Closure for higher moments and other approximation schemes are not 
     implemented yet.
 
@@ -770,8 +767,8 @@ def closeMoments(conditional_moments, scheme = "gamma", order = 2):
         {moment : moment equation}.
     scheme : str, optional
         moment closure approximation scheme to apply. 
-        Possible schemes are: "normal", "gamma", "lognormal".
-        The default is "gamma".
+        Possible schemes are: "normal", "lognormal".
+        The default is "normal".
     order : int, optional
         maximum order of moments to occur in the moment equations. 
         All higher order moments will be approximated.
@@ -877,7 +874,7 @@ def writeToTxt(file, sys_dict, scheme, order):
             f.write('dM(' + str(m) + ') = ' + str(sys_dict['closed_moments'][m]) + '\n')
     return
 
-def generateEquations(stoich_reac, stoich_prod, select, file=None, X=None, rates=None, order=2, scheme="gamma"):
+def generateEquations(stoich_reac, stoich_prod, select, file=None, X=None, rates=None, order=2, scheme="normal"):
     '''
     generates conditional moment equations and closed conditional moment 
     equations from given reaction network stoichiometry. If a filename is 
@@ -912,8 +909,8 @@ def generateEquations(stoich_reac, stoich_prod, select, file=None, X=None, rates
         The default is 2.
     scheme : str, optional
         moment closure approximation scheme to apply. 
-        Possible schemes are: "normal", "gamma", "lognormal".
-        The default is "gamma".
+        Possible schemes are: "normal", "lognormal".
+        The default is "normal".
 
     Returns
     -------
