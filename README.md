@@ -14,11 +14,19 @@ The provided code was written using Python v3.7.9 and uses the following librari
 - [Sympy v1.7.1](https://www.sympy.org/)
 - [Dill v0.3.4](https://pypi.org/project/dill/)
 - [Matplotlib v3.3.3](https://matplotlib.org/)
+- [Scipy v1.7.1](https://scipy.org) (only used in the evaluation of the case study)
 
-In case you are new to Python, the simplest installation of Python, Jupyter notebooks and the required packages is by using [Anaconda](https://www.anaconda.com/products/distribution#windows), a package manager that contains all required packages, except for `Dill`. Instructions to install Python and Jupyter can be found at [here](https://jupyter.readthedocs.io/en/latest/install.html). To install Dill, run the following command in the terminal:
+In case you are new to Python, the simplest installation of Python, Jupyter notebooks and the required packages is by using [Anaconda](https://www.anaconda.com/products/distribution#windows), a package manager that contains all required packages, except for `Dill`. Instructions to install Python and Jupyter can be found [here](https://jupyter.readthedocs.io/en/latest/install.html). To install Dill, run the following command in the terminal:
 ```bash
 pip install dill
 ```
+To ensure version compatibility of all required packages, download the `requirements.txt` and run the following command in your terminal:
+```bash
+pip install -r requirements.txt
+``` 
 
 ## Usage
-The `ConditionalMomentGenerator.py` python script contains functions to generate conditional moment equations as described in **paper**. After installation of the necessary packages, you can download the script and use the functions as explained in the Jupyter notebook `HOW TO generate conditional moment equations.ipynb`.
+The `conditionalMomentGenerator.py` python script contains functions to generate conditional moment equations as described in the paper. After installation of the necessary packages, you can download the script and use the functions as explained in the Jupyter notebook `HOW TO generate conditional moment equations.ipynb`.
+
+## Case study
+The case study directory contains code to reproduce the case study of bistable gene expression as described in the paper. It contains code to generate and save the required conditional moment equations, to run simulations and to plot the results from the simulations. To run the scripts, the `conditionalMomentGenerator.py` file has to be in the parent directory of the case study files (like in the directory structure of this repository).
