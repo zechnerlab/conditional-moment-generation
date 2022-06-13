@@ -6,15 +6,11 @@ import scipy.stats
 import random
 
 # %% load data
-file = 'snSSA/bistable_network_snSSA_'
-X = np.load(file + "X.npy")
+file = 'bistable_network_snSSA_'
+X = np.load(file + 'X.npy')
 M = np.load(file + 'M.npy')
 
-file = 'SSA/bistable_network_SSA_'
-X_SSA = np.load(file + "X.npy")
-
-#reacs = np.load(file + 'reactions.npy')
-#times = np.load(file + 'times.npy')
+X_SSA = np.load(file + 'bistable_network_SSA_X.npy')
 
 # %% data prep for first plot
 #species = ['G_1a', 'G_1i', 'G_2a', 'G_2i', 'R_1', 'R_2', 'P_1', 'P_2']

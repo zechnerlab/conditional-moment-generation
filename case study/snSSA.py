@@ -84,7 +84,7 @@ stoich_reac = Matrix(((0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0), # G_1* (active)
                      (0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0), # R_2
                      (0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0), # P_1
                      (0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0))) # P_2
-#                     1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6
+
 stoich_prod = Matrix(((0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0), # G_1*
                      (0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0), # G_1
                      (0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0), # G_2*
@@ -99,18 +99,18 @@ select = ['G_1a', 'G_1i', 'G_2a', 'G_2i']
 
 # %% specify order, closure scheme, file name to save data to
 order = 2
-scheme = 'normal' # possible schemes: normal, gamma, lognormal
-file = 'snSSA/bistable_network'
+scheme = 'normal' # possible schemes: normal, lognormal
+file = 'bistable_network'
 
 # %% generate and save equations
 my_system = cmg.generateEquations(stoich_reac, 
                               stoich_prod,
                               X = species,
-                              #rates = constants,
                               select = select, 
                               order = order, 
                               scheme = scheme, 
                               file = file)
+
 # %% generate easily accessible variable names from my_system
 X_select, idx_select, rates, RC, RL, RH, moment_names, dM, prop, mapping, stoich_net, stoch_parts, det_parts = systemToVars(my_system)
 
@@ -123,9 +123,9 @@ stoch_func = lambdify([X_select, rates, moment_names], stoch_parts)
 # %% Monte Carlo specs
 tf = 3000                   # final time
 nsim =  10000                 # number of MC simulations
-timerange = np.linspace(0,tf,tf)    # time points
-reactions = np.zeros(nsim)          # to count simulated reactions
-times = np.zeros(nsim)              # for timing
+timerange = np.linspace(0,tf,tf)
+reactions = np.zeros(nsim)
+times = np.zeros(nsim)
 alpha = 5
 
 # %% initial conditions etc.
@@ -136,6 +136,7 @@ constants = [0.01,0.05,5.0,0.04,10**-6,5.0,0.003,10**-6,0.01,0.05,5.0,0.04,10**-
 x_tot = np.zeros((nsim,len(timerange)+1,len(x0)))
 M_tot = np.zeros((nsim,len(timerange)+1,len(M0)))
 Sx = np.asarray(stoich_net[idx_select]).T
+
 # %% run simulations
 
 for i in range(nsim):

@@ -34,7 +34,6 @@ stoich_prod = np.array([[0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0], # G_1*
                      [0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0]]) # P_2
 S = (stoich_prod-stoich_reac).T # net stoichiometry
 
-#species = ['G_1a', 'G_1i', 'G_2a', 'G_2i', 'R_1', 'R_2', 'P_1', 'P_2']
 
 # %% Monte Carlo specs
 tf = 3000                   # final time
